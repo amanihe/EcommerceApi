@@ -8,8 +8,8 @@ from django.db import models
 
 STATUT_CHOICES = (
     ('autre', 'autre'),
-    ('professionnel', 'Professionnel'),
-    ('personnel', 'Personnel')
+    ('professionnel(le)', 'Professionnel(le)'),
+    ('personnel(le)', 'Personnel(le)')
 )
 class T_User(models.Model):
     U_Id = models.AutoField(primary_key=True)

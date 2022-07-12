@@ -9,7 +9,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     re_path(r'^order/$', views.Crud_Order),
+    re_path(r'^orderCustomer/$', views.get_CustomerOrder),
     re_path(r'^order/([0-9]+)$', views.Crud_Order),
+    re_path(r'^orderAdmin/([0-9]+)$', views.get_FnxOrder),
     re_path(r'^facture/$', views.Crud_Facture),
     re_path(r'^facture/([0-9]+)$', views.Crud_Facture),
     re_path(r'^orderLigne/$', views.Crud_orderLigne),
@@ -21,6 +23,7 @@ urlpatterns = [
     re_path(r'^bestProduct/([0-9]+)$', views.get_Best_product),
     re_path(r'^bestProduct/$', views.get_Best_product),
     re_path(r'^editcartItem/([0-9]+)$', views.edit_OrderLigneQte),
+    re_path(r'^editOrderStatus/([0-9]+)$', views.edit_OrderLigneStatus),
 
 ]
 if settings.DEBUG:

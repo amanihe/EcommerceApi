@@ -1,5 +1,6 @@
 
 from django.urls import re_path
+from DjangoAPI import settings
 from Products import views
 
 
@@ -27,3 +28,5 @@ urlpatterns = [
     # re_path(r'^send$',views.send_email),
 
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

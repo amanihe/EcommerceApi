@@ -70,13 +70,13 @@ def Crud_orderLigne(request, id=0):
            # print(i['Product'])
             if (orderLigne_data["Product"] == i['Product']):
                 print(i)
-                return JsonResponse("you have already this product in cart", safe=False)
+                return JsonResponse("vous avez deja ce produit dans votre panier", safe=False)
 
         serializer = OrderLigneSerializer(data=orderLigne_data)
         if serializer.is_valid():
             serializer.save()
 
-            return JsonResponse("add successfully", safe=False)
+            return JsonResponse("Succès d'ajout", safe=False)
 
         return JsonResponse("Failed to Add", safe=False)
     elif request.method == 'PUT':
@@ -161,7 +161,7 @@ def get_allstore(request):
 @csrf_exempt
 def get_Cart(request, userId):
     try:
-        store = T_Order.objects.filter(User=userId, Ord_Status="created")
+        store = T_Order.objects.filter(User=userId, Ord_Status="créée")
         if request.method == 'GET':
             serializer = OrderSerializer(store, many=True)
             return JsonResponse(serializer.data, safe=False)
@@ -194,6 +194,31 @@ def get_OrderLigne(request, orderId):
 
 
 @csrf_exempt
+def get_CustomerOrder(request):
+    try:
+
+        store = T_Order.objects.filter(
+            Ord_Type="customer")
+        if request.method == 'GET':
+            serializer = OrderSerializer(store, many=True)
+            return JsonResponse(serializer.data, safe=False)
+    except:
+        return HttpResponse(status=404)
+@csrf_exempt
+def get_FnxOrder(request,idFnx):
+    try:
+
+        OrderLignFnx = T_OrderLigne.objects.filter(
+            Supplier=idFnx)
+        
+        if request.method == 'GET':
+            serializer = OrderLigneSerializer(OrderLignFnx, many=True)
+            return JsonResponse(serializer.data, safe=False)
+    except:
+        return HttpResponse(status=404)
+
+
+@csrf_exempt
 def get_OrderHistory(request, orderId):
     try:
 
@@ -208,6 +233,8 @@ def get_OrderHistory(request, orderId):
         T['Ord_Id'] = ordSerialize.data['Ord_Id']
         T['Ord_Date'] = ordSerialize.data['Ord_Date'][: 10]
         T['Ord_Status'] = ordSerialize.data['Ord_Status']
+        T['Ord_Type'] = ordSerialize.data['Ord_Type']
+        T['User'] = ordSerialize.data['User']
         print(T)
         # if(['Ord_Type']=='customer'):
         allOrderLign = T_OrderLigne.objects.filter(
@@ -221,6 +248,7 @@ def get_OrderHistory(request, orderId):
             print(j['Product'])
             product = T_Product.objects.get(Prod_Id=j['Product'])
             S_Prod = S_Product(product)
+            P['OrdLign_Status']=j['OrdLign_Status']
             P['Ord_Qte'] = j['Ord_Qte']
             P['Prod_Name'] = S_Prod.data['Prod_Name']
             P['Prod_Marque'] = S_Prod.data['Prod_Marque']
@@ -276,6 +304,16 @@ def edit_OrderLigneQte(request, Id):
     item.Ord_Qte = Vqte['Ord_Qte']
     item.save(update_fields=['Ord_Qte'])
     return JsonResponse(item.Ord_Qte, safe=False)
+
+@csrf_exempt
+def edit_OrderLigneStatus(request, Id):
+
+        vstatus = JSONParser().parse(request)
+        item = T_OrderLigne.objects.get(OrdLign_Id=Id)
+        item.OrdLign_Status = vstatus['OrdLign_Status']
+        item.save(update_fields=['OrdLign_Status'])
+        print(item.OrdLign_Status)
+        return JsonResponse(item.OrdLign_Status, safe=False)
 
 
 @csrf_exempt

@@ -5,14 +5,14 @@ from Order.models import *
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = T_Order
-        fields = ("Ord_Id", "User", "Supplier",
+        fields = ("Ord_Id", "User", 
                   "Ord_Type", "Ord_Status", "Ord_Date")
 
 
 class OrderLigneSerializer(serializers.ModelSerializer):
     class Meta:
         model = T_OrderLigne
-        fields = ("OrdLign_Id", "Order", "Product", "Ord_Qte", "Create_at")
+        fields = ("OrdLign_Id", "Order", "Product", "Ord_Qte","Supplier","OrdLign_Status", "Create_at")
 
 
 class FactureSerializer(serializers.ModelSerializer):

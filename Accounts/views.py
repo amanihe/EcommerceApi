@@ -7,6 +7,7 @@ from django.http.response import JsonResponse
 from Accounts.models import *
 from Accounts.serializers import *
 #from django.core.mail import send_mail
+from django.core.mail import send_mail
 
 from django.core.files.storage import default_storage
 from django.conf import settings
@@ -18,7 +19,7 @@ method_decorator(csrf_protect)
 
 
 @csrf_exempt
-def Crud_User(request, id=0):
+def V_Crud_User(request, id=0):
     if request.method == 'GET':
         user = T_User.objects.all()
         serializer = S_User(user, many=True)
@@ -30,7 +31,7 @@ def Crud_User(request, id=0):
         for i in user.data:
             if (user_data["U_Email"] == i['U_Email']):
                 print(i)
-                return JsonResponse("you have already account with this email", safe=False)
+                return JsonResponse("il existe deja un utilisateur avec cet email", safe=False)
         serializer = S_User(data=user_data)
         if serializer.is_valid():
             serializer.save()
@@ -44,10 +45,11 @@ def Crud_User(request, id=0):
         serializer = S_User(user, data=user_data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse("Updated Successfully", safe=False)
+            return JsonResponse("modification établie", safe=False)
         return JsonResponse("Failed to Update")
     elif request.method == 'DELETE':
         user = T_User.objects.get(U_Id=id)
+
         user.delete()
         return JsonResponse("Deleted Successfully", safe=False)
 
@@ -61,6 +63,8 @@ def get_Fnx(request, Id=0):
             return JsonResponse(serializer.data, safe=False)
     except:
         return HttpResponse(status=404)
+
+
 @csrf_exempt
 def get_User(request, Id):
     try:
@@ -83,14 +87,14 @@ def Crud_Address(request, id=0):
         test = T_Address.objects.filter(User=address_data['User'])
         address = S_Address(test, many=True)
         for i in address.data:
-            if (address_data['Adr_Name'] == i['Adr_Name'] and address_data["Adr_Ville"] == i['Adr_Ville'] and address_data["Adr_Province"] == i['Adr_Province']and address_data["Adr_Pays"] == i['Adr_Pays']):
+            if (address_data['Adr_Name'] == i['Adr_Name'] and address_data["Adr_Ville"] == i['Adr_Ville'] and address_data["Adr_Province"] == i['Adr_Province'] and address_data["Adr_Pays"] == i['Adr_Pays']):
                 print(i)
-                return JsonResponse("you have already  this address", safe=False)
+                return JsonResponse("vous avez deja cette adresse", safe=False)
         serializer = S_Address(data=address_data)
         if serializer.is_valid():
             serializer.save()
 
-            return JsonResponse("Added Successfully", safe=False)
+            return JsonResponse("Ajout avec succès", safe=False)
 
         return JsonResponse("Failed to Add", safe=False)
 
@@ -100,12 +104,18 @@ def Crud_Address(request, id=0):
         serializer = S_Address(address, data=address_data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse("Updated Successfully", safe=False)
+            return JsonResponse("modification etablie", safe=False)
         return JsonResponse("Failed to Update")
     elif request.method == 'DELETE':
         address = T_Address.objects.get(Adr_Id=id)
-        address.delete()
-        return JsonResponse("Deleted Successfully", safe=False)
+        serializer = S_Address(address)
+        #if (address_data["Adr_Default"] == False):
+        print(serializer.data)
+        if (serializer.data["Adr_Default"]==False):
+            address.delete()
+            return JsonResponse("Adresse supprimé", safe=False)
+        else:
+            return JsonResponse("Vous ne pouvez pas supprimer adresse par defaut ", safe=False)
 
 
 @csrf_exempt
@@ -207,3 +217,18 @@ def check_login(request, email):
     if request.method == 'GET':
         serializer = S_User(user, many=True)
         return JsonResponse(serializer.data, safe=False)
+
+
+@csrf_exempt
+def send_email(request):
+    if request.method == 'POST':
+        try:
+            user_data = JSONParser().parse(request)
+            email = user_data['U_Email']
+            print(email)
+            recipient_list = [email]
+            send_mail('Vous avez une commande de la part de notre entreprise',
+                      ' verifier votre compte ', settings.EMAIL_HOST_USER, [email])
+            return JsonResponse("sent sucessfully")
+        except:
+            return HttpResponse(status=404)

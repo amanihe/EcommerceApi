@@ -6,9 +6,9 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    re_path(r'^user/$', views.Crud_User),
+    re_path(r'^user/$', views.V_Crud_User),
     re_path(r'^supplier/$', views.get_Fnx),
-    re_path(r'^user/([0-9]+)$', views.Crud_User),
+    re_path(r'^user/([0-9]+)$', views.V_Crud_User),
     re_path(r'^userById/([0-9]+)$', views.get_User),
     re_path(r'^address/$', views.Crud_Address),
     re_path(r'^address/([0-9]+)$', views.Crud_Address),
@@ -20,4 +20,5 @@ urlpatterns = [
      re_path(r'^editrequest/([0-9]+)$', views.edit_Request),
     re_path(r'^login/<str:email>$', views.check_login),
     re_path(r'^userid/<int:id>$', views.get_user),
+    re_path(r'^sendMail$',views.send_email),
 ]
