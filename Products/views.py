@@ -1,3 +1,6 @@
+from inspect import trace
+import pdb
+from turtle import update
 from unicodedata import category
 from django.http import Http404, HttpResponse
 from django.db.models import Q
@@ -69,7 +72,6 @@ def get_Product_ById(request, prodId):
             return JsonResponse(serializer.data, safe=False)
     except:
         return HttpResponse(status=404)
-
 
 @csrf_exempt
 def get_Product_ByCateg(request, Id):
@@ -280,3 +282,11 @@ def product_by_category(request, category):
     if request.method == 'GET':
         serializer = S_Product(product, many=True)
         return JsonResponse(serializer.data, safe=False)
+
+@csrf_exempt
+def edit_ProductQte(request,Id):
+    Vqte=JSONParser().parse(request)
+    item=T_Product.objects.get(Prod_Id=Id)
+    item.Prod_Quantity=Vqte['Prod_Quantity']+item.Prod_Quantity
+    item.save(update_fields=['Prod_Quantity'])
+    return JsonResponse(item.Prod_Quantity,safe=False)

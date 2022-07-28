@@ -32,14 +32,24 @@ class T_Order(models.Model):
         T_User, on_delete=models.CASCADE, related_name='User_Order')
     Ord_Type = models.CharField(max_length=120, choices=ORDER_TYPE_CHOICES)
     Ord_Status = models.CharField(
-        max_length=120, default='créée', choices=ORDER_STATUS_CHOICES)
+        max_length=120, default='envoyée', choices=ORDER_STATUS_CHOICES)
     Ord_Date = models.DateTimeField(auto_now_add=True)
+
+class T_SousOrder(models.Model):
+    SousOrd_Id=models.AutoField(primary_key=True)
+    Ord_Id=models.ForeignKey(T_Order,null=True,on_delete=models.CASCADE)
+    SousOrd_status=models.CharField(max_length=120,default='envoyée',choices=ORDER_STATUS_CHOICES)
+    SousOrd_Date= models.DateTimeField(auto_now_add=True)
+    expected_delivery_date=models.DateField()
+    real_delivery_date=models.DateField()
 
 
 class T_OrderLigne(models.Model):
     OrdLign_Id = models.AutoField(primary_key=True)
     Order = models.ForeignKey(T_Order, null=True,
                               on_delete=models.CASCADE)
+    sousOrder=models.ForeignKey(T_SousOrder,null=True,
+                             on_delete=models.CASCADE)
     Product = models.ForeignKey(T_Product,
                                 on_delete=models.CASCADE)
    
@@ -47,7 +57,7 @@ class T_OrderLigne(models.Model):
     Supplier = models.ForeignKey(
         T_User, on_delete=models.CASCADE,null=True, related_name='Supplier_Order')
     OrdLign_Status = models.CharField(
-        max_length=120, default='créée',null=True, choices=ORDERLIGN_STATUS_CHOICES )
+        max_length=120, default='envoyée',null=True, choices=ORDERLIGN_STATUS_CHOICES )
     Create_at = models.DateTimeField(auto_now_add=True)
 
 

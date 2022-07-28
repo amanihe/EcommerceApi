@@ -1,6 +1,9 @@
+from ast import Lambda
 from functools import partial
+from pdb import Pdb
 from pickle import FALSE, TRUE
 import statistics
+from turtle import pd
 from urllib import response
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -9,6 +12,7 @@ from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 import Order
 from rest_framework.response import Response
+from datetime import datetime
 
 #from Order.models import T_Facture, T_Order
 from Order.serializers import *
@@ -21,9 +25,22 @@ from django.utils.decorators import method_decorator
 from rest_framework.renderers import JSONRenderer
 
 from Products.serializers import S_Product
+import pdb
 
 method_decorator(csrf_protect)
 # Create your views here.
+
+@csrf_exempt
+def GetAndUpdateOrder(request,Id):
+    order=T_Order.objects.get(Ord_Id=Id)
+    if request.method=='GET':
+        serializer=OrderSerializer(order,many=False)
+        return JsonResponse(serializer.data,safe=False)
+    elif request.method=='PUT':
+        data=JSONParser().parse(request)
+        order.Ord_Status=data['Ord_Status']
+        order.save(update_fields=['Ord_Status'])
+        return JsonResponse(order.Ord_Status,safe=False)
 
 
 @csrf_exempt
@@ -54,6 +71,47 @@ def Crud_Order(request, id=0):
         return JsonResponse("Deleted Successfully", safe=False)
 
 
+#related to sousOrder model
+@csrf_exempt
+def get_SousOrder(request,ordId):
+ 
+    sousOrd=T_SousOrder.objects.filter(Ord_Id=ordId).order_by('SousOrd_Date')
+    
+    try:
+        if request.method=='GET':
+            serializer=SousOrderSerializer(sousOrd,many=True)
+            return JsonResponse(serializer.data, safe=False)
+    except:
+        return HttpResponse(status=404)
+
+@csrf_exempt
+def creat_sousOrd(request):
+    if request.method == 'POST':
+        SousOrd_data = JSONParser().parse(request)
+        
+        serializer = SousOrderSerializer(data=SousOrd_data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, safe=False)
+
+        return JsonResponse("Failed to Add", safe=False)
+@csrf_exempt
+def edit_sousOrderStatus(request,Id):
+        vstatus = JSONParser().parse(request)
+        item = T_SousOrder.objects.get(SousOrd_Id=Id)
+        item.SousOrd_status = vstatus['SousOrd_status']
+        item.save(update_fields=['SousOrd_status'])
+        print(item.SousOrd_status)
+        return JsonResponse(item.SousOrd_status, safe=False)
+
+@csrf_exempt
+def edit_realDateDelivery(request,Id):
+    vDate=JSONParser().parse(request)
+    sousOrd= T_SousOrder.objects.get(SousOrd_Id=Id)
+    sousOrd.real_delivery_date=datetime.now()
+    sousOrd.save(update_fields=['real_delivery_date'])
+    return JsonResponse(sousOrd.real_delivery_date,safe=False)
+#****END SousOrd****
 @csrf_exempt
 def Crud_orderLigne(request, id=0):
     if request.method == 'GET':
@@ -209,10 +267,15 @@ def get_FnxOrder(request,idFnx):
     try:
 
         OrderLignFnx = T_OrderLigne.objects.filter(
-            Supplier=idFnx)
+            Supplier=idFnx).order_by('Order')
+
+        
         
         if request.method == 'GET':
             serializer = OrderLigneSerializer(OrderLignFnx, many=True)
+            #pdb.set_trace()
+            
+            
             return JsonResponse(serializer.data, safe=False)
     except:
         return HttpResponse(status=404)

@@ -24,6 +24,16 @@ urlpatterns = [
     re_path(r'^bestProduct/$', views.get_Best_product),
     re_path(r'^editcartItem/([0-9]+)$', views.edit_OrderLigneQte),
     re_path(r'^editOrderStatus/([0-9]+)$', views.edit_OrderLigneStatus),
+    #sousOrdre urls:
+    re_path(r'^editSousOrderStatus/([0-9]+)$', views.edit_sousOrderStatus),
+    re_path(r'^sousOrder/([0-9]+)$', views.get_SousOrder),
+    re_path(r'^CreatSousOrdre/$', views.creat_sousOrd),
+    re_path(r'^sousOrderDeliveryDate/([0-9]+)$', views.edit_realDateDelivery),
+    #Order urls:
+    re_path(r'^ordrebyid/([0-9]+)$', views.GetAndUpdateOrder),
+
+
+
 
 ]
 if settings.DEBUG:
