@@ -73,9 +73,9 @@ def Crud_Order(request, id=0):
 
 #related to sousOrder model
 @csrf_exempt
-def get_SousOrder(request,ordId):
+def get_SousOrder(request,Id):
  
-    sousOrd=T_SousOrder.objects.filter(Ord_Id=ordId).order_by('SousOrd_Date')
+    sousOrd=T_SousOrder.objects.filter(Ord_Id=Id).order_by('SousOrd_Date')
     
     try:
         if request.method=='GET':
@@ -85,16 +85,36 @@ def get_SousOrder(request,ordId):
         return HttpResponse(status=404)
 
 @csrf_exempt
-def creat_sousOrd(request):
+def crud_sousOrder(request,id=0):
     if request.method == 'POST':
         SousOrd_data = JSONParser().parse(request)
-        
         serializer = SousOrderSerializer(data=SousOrd_data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, safe=False)
-
         return JsonResponse("Failed to Add", safe=False)
+    elif request.method=='GET':
+        try:
+            sousOrd=T_SousOrder.objects.filter(Ord_Id=id)
+            serializer=SousOrderSerializer(sousOrd,many=True)
+            
+            return JsonResponse(serializer.data, safe=False)
+        except:
+            return HttpResponse(status=404)
+    elif request.method=='PUT':
+        sousOrd_data = JSONParser().parse(request)
+        sousOrder = T_SousOrder.objects.get(
+            SousOrd_Id=sousOrd_data['SousOrd_Id'])
+        serializer = SousOrderSerializer(sousOrder, data=sousOrd_data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse("Updated Successfully", safe=False)
+        return JsonResponse("Failed to Update")
+
+    elif request.method=='DELETE':
+                sousOrder = T_SousOrder.objects.get(SousOrd_Id=id)
+                sousOrder.delete()
+                return JsonResponse("Deleted Successfully", safe=False)
 @csrf_exempt
 def edit_sousOrderStatus(request,Id):
         vstatus = JSONParser().parse(request)

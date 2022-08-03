@@ -1,3 +1,5 @@
+from asyncio.windows_events import NULL
+from contextlib import nullcontext
 from datetime import datetime
 from itertools import product
 from django.db import models
@@ -40,8 +42,8 @@ class T_SousOrder(models.Model):
     Ord_Id=models.ForeignKey(T_Order,null=True,on_delete=models.CASCADE)
     SousOrd_status=models.CharField(max_length=120,default='envoyée',choices=ORDER_STATUS_CHOICES)
     SousOrd_Date= models.DateTimeField(auto_now_add=True)
-    expected_delivery_date=models.DateField()
-    real_delivery_date=models.DateField()
+    expected_delivery_date=models.DateField(null=True)
+    real_delivery_date=models.DateField(null=True)
 
 
 class T_OrderLigne(models.Model):
@@ -58,6 +60,7 @@ class T_OrderLigne(models.Model):
         T_User, on_delete=models.CASCADE,null=True, related_name='Supplier_Order')
     OrdLign_Status = models.CharField(
         max_length=120, default='envoyée',null=True, choices=ORDERLIGN_STATUS_CHOICES )
+    real_delivery_date=models.DateField(null=True)
     Create_at = models.DateTimeField(auto_now_add=True)
 
 

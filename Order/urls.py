@@ -26,8 +26,9 @@ urlpatterns = [
     re_path(r'^editOrderStatus/([0-9]+)$', views.edit_OrderLigneStatus),
     #sousOrdre urls:
     re_path(r'^editSousOrderStatus/([0-9]+)$', views.edit_sousOrderStatus),
-    re_path(r'^sousOrder/([0-9]+)$', views.get_SousOrder),
-    re_path(r'^CreatSousOrdre/$', views.creat_sousOrd),
+    re_path(r'^getSousOrder/([0-9]+)$', views.get_SousOrder),
+    re_path(r'^sousOrdre/$', views.crud_sousOrder),
+    re_path(r'^sousOrdre/([0-9]+)$', views.crud_sousOrder),
     re_path(r'^sousOrderDeliveryDate/([0-9]+)$', views.edit_realDateDelivery),
     #Order urls:
     re_path(r'^ordrebyid/([0-9]+)$', views.GetAndUpdateOrder),
