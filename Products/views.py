@@ -7,7 +7,7 @@ from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from Products.models import T_Product, T_Category
+from Products.models import *
 from Products.serializers import *
 #from django.core.mail import send_mail
 
@@ -30,7 +30,7 @@ def Crud_Product(request, id=0):
         return JsonResponse(products_serializer.data, safe=False)
     elif request.method == 'POST':
         product_data = JSONParser().parse(request)
-
+        print(product_data)
         test = T_Product.objects.filter(Prod_Name=product_data['Prod_Name'])
         prod = S_Product(test, many=True)
         for i in prod.data:
@@ -38,15 +38,16 @@ def Crud_Product(request, id=0):
                 print(i)
                 return JsonResponse("you have already this product", safe=False)
         products_serializer = S_Product(data=product_data)
+       # print(products_serializer.data)
         if products_serializer.is_valid():
             products_serializer.save()
 
-            return JsonResponse("Added Successfully", safe=False)
+            return JsonResponse(products_serializer.data, safe=False)
 
         return JsonResponse("Failed to Add", safe=False)
     elif request.method == 'PUT':
         product_data = JSONParser().parse(request)
-        product = T_Product.objects.get(Prod_Id=product_data['Prod_Id'])
+        product = T_Product.objects.get(Prod_Id=id)
         products_serializer = S_Product(
             product, data=product_data)
         if products_serializer.is_valid():
@@ -93,12 +94,14 @@ def SaveFile(request):
 @csrf_exempt
 def Crud_ProductImg(request, id=0):
     if request.method == 'GET':
-        productsImg = T_ProductImg.objects.all()
+        productsImg = T_ProductImg.objects.filter(product=id)
         productsImg_serializer = S_ProductImg(productsImg, many=True)
         return JsonResponse(productsImg_serializer.data, safe=False)
     elif request.method == 'POST':
         productImg_data = JSONParser().parse(request)
-        productsImg_serializer = S_Product(data=productImg_data)
+        print(productImg_data)
+        productsImg_serializer = S_ProductImg(data=productImg_data)
+        
         if productsImg_serializer.is_valid():
             productsImg_serializer.save()
 
@@ -120,6 +123,36 @@ def Crud_ProductImg(request, id=0):
         return JsonResponse("Deleted Successfully", safe=False)
 
 
+
+@csrf_exempt
+def Crud_ProductImgColor(request, id=0):
+    if request.method == 'GET':
+        productsImg = T_ProductImgColor.objects.filter(Pic_Id=id)
+        productsImg_serializer = S_ProductImgColor(productsImg, many=True)
+        return JsonResponse(productsImg_serializer.data, safe=False)
+    elif request.method == 'POST':
+        productImg_data = JSONParser().parse(request)
+        
+        productsImg_serializer =S_ProductImgColor(data=productImg_data)
+        if productsImg_serializer.is_valid():
+            productsImg_serializer.save()
+
+            return JsonResponse("Added Successfully", safe=False)
+
+        return JsonResponse("Failed to Add", safe=False)
+    elif request.method == 'PUT':
+        productImg_data = JSONParser().parse(request)
+        productImg = T_ProductImg.objects.get(
+            product=productImg_data['product'])
+        productsImg_serializer = S_ProductImg(productImg, data=productImg_data)
+        if productsImg_serializer.is_valid():
+            productsImg_serializer.save()
+            return JsonResponse("Updated Successfully", safe=False)
+        return JsonResponse("Failed to Update", safe=False)
+    elif request.method == 'DELETE':
+        productImg = T_ProductImg.objects.get(product=id)
+        productImg.delete()
+        return JsonResponse("Deleted Successfully", safe=False)
 @csrf_exempt
 def Crud_Category(request, id=0):
     if request.method == 'GET':
@@ -128,11 +161,12 @@ def Crud_Category(request, id=0):
         return JsonResponse(categories_serializer.data, safe=False)
     elif request.method == 'POST':
         category_data = JSONParser().parse(request)
+        print(category_data)
         categories_serializer = S_Category(data=category_data)
         if categories_serializer.is_valid():
             categories_serializer.save()
 
-            return JsonResponse("Added Successfully", safe=False)
+            return JsonResponse(categories_serializer.data, safe=False)
 
         return JsonResponse("Failed to Add", safe=False)
     elif request.method == 'PUT':
@@ -153,7 +187,37 @@ def Crud_Category(request, id=0):
 @csrf_exempt
 def Crud_Caracteristic(request, id=0):
     if request.method == 'GET':
-        characteristic = T_Characteristic.objects.all()
+        characteristic = T_Characteristic.objects.filter(Carec_Id=id)
+        serializer = S_Characteristic(characteristic, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        characteristic_data = JSONParser().parse(request)
+        serializer = S_Characteristic(data=characteristic_data)
+        if serializer.is_valid():
+            serializer.save()
+
+            return JsonResponse("Added Successfully", safe=False)
+
+        return JsonResponse("Failed to Add", safe=False)
+    elif request.method == 'PUT':
+        characteristic_data = JSONParser().parse(request)
+        characteristic = T_Characteristic.objects.get(
+            Carec_Id=characteristic_data['Carec_Id'])
+        serializer = S_Characteristic(
+            characteristic, data=characteristic_data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse("Updated Successfully", safe=False)
+        return JsonResponse("Failed to Update")
+    elif request.method == 'DELETE':
+        characteristic = T_Characteristic.objects.get(Carec_Id=id)
+        characteristic.delete()
+        return JsonResponse("Deleted Successfully", safe=False)
+
+@csrf_exempt
+def Crud_Caracteristic_ByCateg(request, id=0):
+    if request.method == 'GET':
+        characteristic = T_Characteristic.objects.filter(category=id)
         serializer = S_Characteristic(characteristic, many=True)
         return JsonResponse(serializer.data, safe=False)
     elif request.method == 'POST':
@@ -184,7 +248,37 @@ def Crud_Caracteristic(request, id=0):
 @csrf_exempt
 def Crud_CaracDetail(request, id=0):
     if request.method == 'GET':
-        characDetail = T_Carac_detail.objects.all()
+        characDetail = T_Carac_detail.objects.filter(Carac_Detail_Id=id)
+        serializer = S_Carac_detail(characDetail, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        characDetail_data = JSONParser().parse(request)
+        serializer = S_Carac_detail(data=characDetail_data)
+        if serializer.is_valid():
+            serializer.save()
+
+            return JsonResponse("Added Successfully", safe=False)
+
+        return JsonResponse("Failed to Add", safe=False)
+    elif request.method == 'PUT':
+        characDetail_data = JSONParser().parse(request)
+        characDetail = T_Carac_detail.objects.get(
+            Carac_Detail_Id=characDetail_data['Carac_Detail_Id'])
+        serializer = S_Carac_detail(
+            characDetail, data=characDetail_data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse("Updated Successfully", safe=False)
+        return JsonResponse("Failed to Update")
+    elif request.method == 'DELETE':
+        characDetail = T_Carac_detail.objects.get(Carac_Detail_Id=id)
+        characDetail.delete()
+        return JsonResponse("Deleted Successfully", safe=False)
+
+@csrf_exempt
+def Crud_CaracDetail_Bycarac(request, id=0):
+    if request.method == 'GET':
+        characDetail = T_Carac_detail.objects.filter(Carac_Id=id)
         serializer = S_Carac_detail(characDetail, many=True)
         return JsonResponse(serializer.data, safe=False)
     elif request.method == 'POST':
@@ -215,12 +309,12 @@ def Crud_CaracDetail(request, id=0):
 @csrf_exempt
 def Crud_CaracProduct(request, id=0):
     if request.method == 'GET':
-        characProduct = T_Carac_detail.objects.all()
-        serializer = S_Carac_detail(characProduct, many=True)
+        characProduct = T_Carac_Product.objects.filter(Prod_Id=id)
+        serializer = S_Carac_Product(characProduct, many=True)
         return JsonResponse(serializer.data, safe=False)
     elif request.method == 'POST':
         characProduct_data = JSONParser().parse(request)
-        serializer = S_Carac_detail(data=characProduct_data)
+        serializer = S_Carac_Product(data=characProduct_data)
         if serializer.is_valid():
             serializer.save()
 
@@ -229,7 +323,7 @@ def Crud_CaracProduct(request, id=0):
         return JsonResponse("Failed to Add", safe=False)
     elif request.method == 'PUT':
         characProduct_data = JSONParser().parse(request)
-        characProduct = T_Carac_detail.objects.get(
+        characProduct = T_Carac_Product.objects.get(
             Carec_Prod_Id=characProduct_data['Carec_Prod_Id'])
         serializer = S_Carac_detail(
             characProduct, data=characProduct_data)
@@ -238,10 +332,39 @@ def Crud_CaracProduct(request, id=0):
             return JsonResponse("Updated Successfully", safe=False)
         return JsonResponse("Failed to Update")
     elif request.method == 'DELETE':
-        characProduct = T_Carac_detail.objects.get(Carec_Prod_Id=id)
+        characProduct = T_Carac_Product.objects.get(Carec_Prod_Id=id)
         characProduct.delete()
         return JsonResponse("Deleted Successfully", safe=False)
 
+@csrf_exempt
+def Crud_CaracProductByCarac(request, id=0):
+    if request.method == 'GET':
+        characProduct = T_Carac_Product.objects.filter(Carec_Id=id)
+        serializer = S_Carac_Product(characProduct, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        characProduct_data = JSONParser().parse(request)
+        serializer = S_Carac_Product(data=characProduct_data)
+        if serializer.is_valid():
+            serializer.save()
+
+            return JsonResponse("Added Successfully", safe=False)
+
+        return JsonResponse("Failed to Add", safe=False)
+    elif request.method == 'PUT':
+        characProduct_data = JSONParser().parse(request)
+        characProduct = T_Carac_Product.objects.get(
+            Carec_Prod_Id=characProduct_data['Carec_Prod_Id'])
+        serializer = S_Carac_detail(
+            characProduct, data=characProduct_data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse("Updated Successfully", safe=False)
+        return JsonResponse("Failed to Update")
+    elif request.method == 'DELETE':
+        characProduct = T_Carac_Product.objects.get(Carec_Prod_Id=id)
+        characProduct.delete()
+        return JsonResponse("Deleted Successfully", safe=False)
 
 # Create your views here.
 class ProductDetail(APIView):

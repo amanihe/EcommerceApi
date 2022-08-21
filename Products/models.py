@@ -14,14 +14,14 @@ class T_Category(models.Model):
 
 class T_Characteristic(models.Model):
     Carec_Id = models.AutoField(primary_key=True)
-    Carecteristique = models.CharField(max_length=100, unique=True)
+    Carecteristique = models.CharField(max_length=100)
     category = models.ManyToManyField(T_Category, blank=False)
     Create_at = models.DateTimeField(auto_now_add=True)
 
 
 class T_Carac_detail(models.Model):
     Carac_Detail_Id = models.AutoField(primary_key=True)
-    Carac_Detail = models.CharField(max_length=100, unique=True)
+    Carac_Detail = models.CharField(max_length=100)
     Carac_Id = models.ForeignKey(T_Characteristic,
                                  on_delete=models.CASCADE)
 
@@ -53,17 +53,25 @@ class T_Product(models.Model):
 
 
 class T_ProductImg(models.Model):
+    id= models.AutoField(primary_key=True)
     product = models.ForeignKey(T_Product, on_delete=models.CASCADE)
     url = models.CharField(max_length=100, unique=True)
+    color=models.CharField(max_length=100,default='')
+
+class T_ProductImgColor(models.Model):
+    id= models.AutoField(primary_key=True)
+    Pic_Url= models.CharField(max_length=100)
+    Pic_Color = models.CharField(max_length=100)
+    Pic_Id=models.ForeignKey(T_ProductImg, on_delete=models.CASCADE)
 
 
 class T_Carac_Product(models.Model):
     Carec_Prod_Id = models.AutoField(primary_key=True)
     Prod_Id = models.ForeignKey(T_Product,
                                 on_delete=models.CASCADE)
-    Carec_Id = models.ForeignKey(T_Characteristic,
+    Carec_Id = models.ForeignKey(T_Carac_detail,
                                  on_delete=models.CASCADE)
-    Carac_Detail = models.CharField(max_length=100, unique=True)
+    #Carac_Detail = models.CharField(max_length=100, unique=True)
 
 
 #from Accounts.models import T_Admin, T_Supplier
