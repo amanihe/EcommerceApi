@@ -338,14 +338,18 @@ def Crud_CaracProduct(request, id=0):
         return JsonResponse("Failed to Add", safe=False)
     elif request.method == 'PUT':
         characProduct_data = JSONParser().parse(request)
+        
         characProduct = T_Carac_Product.objects.get(
             Carec_Prod_Id=characProduct_data['Carec_Prod_Id'])
-        serializer = S_Carac_detail(
+        
+        serializer = S_Carac_Product(
             characProduct, data=characProduct_data)
+        
         if serializer.is_valid():
             serializer.save()
+            print(serializer.data)
             return JsonResponse("Updated Successfully", safe=False)
-        return JsonResponse("Failed to Update")
+        return JsonResponse("Failed to Update",safe=False)
     elif request.method == 'DELETE':
         characProduct = T_Carac_Product.objects.get(Carec_Prod_Id=id)
         characProduct.delete()
