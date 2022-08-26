@@ -10,6 +10,8 @@ class T_Category(models.Model):
     Categ_Parent = models.ForeignKey("self", null=True, blank=True, related_name="children", on_delete=models.CASCADE
                                      )
     Create_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.Categ_Id
 
 
 class T_Characteristic(models.Model):

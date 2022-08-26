@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from Products.models import *
 from Products.serializers import *
+from rest_framework import viewsets
 #from django.core.mail import send_mail
 
 from django.core.files.storage import default_storage
@@ -193,8 +194,21 @@ def Crud_Caracteristic(request, id=0):
     elif request.method == 'POST':
         characteristic_data = JSONParser().parse(request)
         serializer = S_Characteristic(data=characteristic_data)
+        
         if serializer.is_valid():
+            
             serializer.save()
+           
+            for categ in characteristic_data["category"]:
+             categobj=T_Category.objects.get(Categ_Id=categ)
+            
+             print(serializer.fields["category"])
+             serializer.data["category"].append(categobj)
+             
+             
+             #serializer.category.add(categ_obj)
+            serializer_carac=S_Characteristic(serializer)
+            
 
             return JsonResponse("Added Successfully", safe=False)
 
@@ -213,6 +227,7 @@ def Crud_Caracteristic(request, id=0):
         characteristic = T_Characteristic.objects.get(Carec_Id=id)
         characteristic.delete()
         return JsonResponse("Deleted Successfully", safe=False)
+
 
 @csrf_exempt
 def Crud_Caracteristic_ByCateg(request, id=0):
