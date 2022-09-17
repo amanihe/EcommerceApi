@@ -24,6 +24,7 @@ urlpatterns = [
     re_path(r'^caracProduct/([0-9]+)$', views.Crud_CaracProduct),
     re_path(r'^ProductById/([0-9]+)$', views.get_Product_ById),
     re_path(r'^get_Product_ByCateg/([0-9]+)$', views.get_Product_ByCateg),
+    re_path(r'^editProduct/([0-9]+)$', views.edit_ProductQte),
     
     # re_path(r'^send$',views.send_email),
 
