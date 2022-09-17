@@ -39,7 +39,7 @@ class S_Carac_Product(serializers.ModelSerializer):
     class Meta:
         model = T_Carac_Product
         fields = (
-            "Carec_Prod_Id", "Prod_Id", "Carec_Id", "Carac_Detail" )
+            "Carec_Prod_Id", "Prod_Id", "Carec_Id" )
 
             
 
@@ -47,5 +47,10 @@ class S_ProductImg(serializers.ModelSerializer):
     class Meta:
         model = T_ProductImg
         fields = (
-            "product", "url" )
-
+          "id",  "product", "url" ,"color")
+          
+class S_ProductImgColor(serializers.ModelSerializer):
+    class Meta:
+        model = T_ProductImgColor
+        fields = (
+          "id", "Pic_Url" ,"Pic_Color",  "Pic_Id")
